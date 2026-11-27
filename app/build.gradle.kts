@@ -5,14 +5,14 @@ plugins {
 
 android {
     namespace = "com.lumiglass.widgets"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.lumiglass.widgets"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 36
+        versionCode = 2
+        versionName = "1.2"
     }
 
     compileOptions {
@@ -23,4 +23,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+}
+
+dependencies {
+    // Native Android View-based Liquid Glass with AGSL lens rendering on API 33+.
+    implementation("com.github.QWEA0:liquidglass:v2.0.11")
 }
