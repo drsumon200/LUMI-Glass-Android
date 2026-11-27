@@ -100,17 +100,15 @@ class MainActivity : Activity() {
         fun refreshPreview() {
             val tint = tintPicker.selectedItemPosition.coerceIn(0, 2)
             val opacityLevel = opacity.progress.coerceIn(0, 2)
-            preview.background = getDrawable(backgroundFor(tint, opacityLevel))
+            // Keep the foreground label transparent so it does not cover the lens.
+            preview.background = null
+            val tintAlpha = when (opacityLevel) { 0 -> 18; 2 -> 62; else -> 36 }
             glassPreview.glassTint = when (tint) {
-                1 -> Color.argb(30, 180, 225, 255)
-                2 -> Color.argb(36, 190, 145, 255)
-                else -> Color.argb(30, 145, 175, 255)
+                1 -> Color.argb(tintAlpha, 180, 225, 255)
+                2 -> Color.argb(tintAlpha, 190, 145, 255)
+                else -> Color.argb(tintAlpha, 145, 175, 255)
             }
-            glassPreview.alpha = when (opacityLevel) {
-                0 -> 0.86f
-                2 -> 1f
-                else -> 0.94f
-            }
+            glassPreview.alpha = 1f
             opacityText.text = opacityName(opacity.progress)
         }
         tintPicker.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
