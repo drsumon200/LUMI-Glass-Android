@@ -1,0 +1,10 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/glass_root" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:gravity="center" android:padding="14dp" android:background="@drawable/glass_card">
+    <TextView android:id="@+id/date_day" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="FRIDAY" android:textColor="#E6EEFF" android:textSize="12sp" android:letterSpacing="0.12"/>
+    <TextView android:id="@+id/date_number" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="27" android:textColor="#FFFFFF" android:textSize="46sp" android:fontFamily="sans-serif-light"/>
+    <TextView android:id="@+id/date_month" android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:text="NOVEMBER 2026" android:textColor="#E6EEFF" android:textSize="12sp"/>
+</LinearLayout>
