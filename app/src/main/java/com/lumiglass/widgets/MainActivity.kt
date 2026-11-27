@@ -2,8 +2,13 @@ package com.lumiglass.widgets
 
 import android.app.Activity
 import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import android.view.Gravity
 import android.widget.*
+import android.widget.FrameLayout
+import com.example.liquidglass.GlassMaterial
+import com.example.liquidglass.LiquidGlassView
 
 class MainActivity : Activity() {
     private val prefs by lazy { getSharedPreferences("lumi_settings", MODE_PRIVATE) }
@@ -32,14 +37,51 @@ class MainActivity : Activity() {
             setPadding(0, 2, 0, dp(24))
         })
 
+        // The library samples the backdrop behind this View. This is an in-app
+        // preview only; Android RemoteViews home widgets keep their safe fallback.
+        val previewBackdrop = FrameLayout(this).apply {
+            background = GradientDrawable(
+                GradientDrawable.Orientation.TL_BR,
+                intArrayOf(Color.rgb(28, 62, 112), Color.rgb(105, 66, 132), Color.rgb(24, 116, 139))
+            ).apply { cornerRadius = dp(24).toFloat() }
+            clipToPadding = false
+            clipChildren = false
+            addView(TextView(this@MainActivity).apply {
+                text = "✦     LUMI     ◇     GLASS     ✦"
+                textSize = 18f
+                letterSpacing = .08f
+                gravity = Gravity.CENTER
+                setTextColor(Color.argb(145, 255, 255, 255))
+            }, FrameLayout.LayoutParams(-1, -1))
+        }
+        val glassPreview = LiquidGlassView(this).apply {
+            material = GlassMaterial.REGULAR
+            cornerRadius = dp(22).toFloat()
+            bevelWidth = dp(14).toFloat()
+            refractionHeight = dp(12).toFloat()
+            dispersionStrength = 0.08f
+            enableSensorHighlight = true
+            enableAdaptiveTint = true
+            glassTint = Color.argb(30, 160, 195, 255)
+        }
         val preview = TextView(this).apply {
             text = "09:41\nFRIDAY  ·  27 NOVEMBER"
             textSize = 25f
+            gravity = Gravity.CENTER
             setTextColor(Color.WHITE)
-            setPadding(dp(22), dp(26), dp(22), dp(26))
+            setPadding(dp(22), dp(18), dp(22), dp(18))
             setLineSpacing(dp(4).toFloat(), 1f)
         }
-        page.addView(preview, LinearLayout.LayoutParams(-1, -2).apply { bottomMargin = dp(26) })
+        glassPreview.addView(preview, FrameLayout.LayoutParams(-1, -1))
+        previewBackdrop.addView(
+            glassPreview,
+            FrameLayout.LayoutParams(-1, dp(112), Gravity.CENTER).apply {
+                setMargins(dp(14), dp(14), dp(14), dp(14))
+            }
+        )
+        page.addView(previewBackdrop, LinearLayout.LayoutParams(-1, dp(160)).apply {
+            bottomMargin = dp(26)
+        })
 
         section(page, "APPEARANCE")
         label(page, "Glass tint")
@@ -56,7 +98,19 @@ class MainActivity : Activity() {
         page.addView(opacity)
         val opacityText = label(page, opacityName(opacity.progress))
         fun refreshPreview() {
-            preview.background = getDrawable(backgroundFor(tintPicker.selectedItemPosition, opacity.progress))
+            val tint = tintPicker.selectedItemPosition.coerceIn(0, 2)
+            val opacityLevel = opacity.progress.coerceIn(0, 2)
+            preview.background = getDrawable(backgroundFor(tint, opacityLevel))
+            glassPreview.glassTint = when (tint) {
+                1 -> Color.argb(30, 180, 225, 255)
+                2 -> Color.argb(36, 190, 145, 255)
+                else -> Color.argb(30, 145, 175, 255)
+            }
+            glassPreview.alpha = when (opacityLevel) {
+                0 -> 0.86f
+                2 -> 1f
+                else -> 0.94f
+            }
             opacityText.text = opacityName(opacity.progress)
         }
         tintPicker.onItemSelectedListener = object : android.widget.AdapterView.OnItemSelectedListener {
@@ -98,10 +152,10 @@ class MainActivity : Activity() {
         }, LinearLayout.LayoutParams(-1, dp(52)).apply { topMargin = dp(24) })
 
         page.addView(TextView(this).apply {
-            text = "LUMI GLASS  •  VERSION 1.1\nLiquid-glass inspired styling. True live wallpaper blur depends on launcher support."
+            text = "LUMI GLASS  •  VERSION 1.2\nAGSL-powered in-app glass preview. Home Screen widget rendering remains launcher-safe."
             textSize = 10f
             setTextColor(Color.rgb(125, 146, 178))
-            gravity = android.view.Gravity.CENTER
+            gravity = Gravity.CENTER
             setPadding(0, dp(22), 0, dp(10))
         })
         setContentView(ScrollView(this).apply { addView(page) })
